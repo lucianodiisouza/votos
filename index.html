@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Apuração 2026 ao vivo · Presidente 2º turno</title>
+<title>Apuração 2026 · resultado final do 2º turno</title>
 <!-- PWA -->
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0b0d12">
@@ -15,14 +15,14 @@
 <meta name="apple-mobile-web-app-title" content="Apuração">
 
 <!-- SEO / Open Graph / Twitter -->
-<meta name="description" content="Acompanhe ao vivo a apuração do 2º turno para Presidente: Lula x Flávio Bolsonaro, com dados oficiais do TSE atualizados em tempo real, por estado.">
+<meta name="description" content="Resultado final do 2º turno para Presidente: Lula x Flávio Bolsonaro, com os dados oficiais do TSE, a curva da apuração e o resultado por estado.">
 <link rel="canonical" href="https://votos.oprimo.dev/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Apuração 2026">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:url" content="https://votos.oprimo.dev/">
-<meta property="og:title" content="Apuração 2026 ao vivo · Presidente 2º turno">
-<meta property="og:description" content="Lula x Flávio Bolsonaro: acompanhe a apuração do 2º turno com dados oficiais do TSE em tempo real, por estado.">
+<meta property="og:title" content="Apuração 2026 · resultado final do 2º turno">
+<meta property="og:description" content="Lula x Flávio Bolsonaro: o resultado final do 2º turno com os dados oficiais do TSE, por estado.">
 <meta property="og:image" content="https://votos.oprimo.dev/og.png">
 <meta property="og:image:secure_url" content="https://votos.oprimo.dev/og.png">
 <meta property="og:image:type" content="image/png">
@@ -30,8 +30,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Apuração 2026 ao vivo — Presidente, 2º turno, dados oficiais do TSE em tempo real. Mapa do Brasil.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Apuração 2026 ao vivo · Presidente 2º turno">
-<meta name="twitter:description" content="Lula x Flávio Bolsonaro: apuração do 2º turno com dados oficiais do TSE em tempo real.">
+<meta name="twitter:title" content="Apuração 2026 · resultado final do 2º turno">
+<meta name="twitter:description" content="Lula x Flávio Bolsonaro: resultado final do 2º turno com os dados oficiais do TSE.">
 <meta name="twitter:image" content="https://votos.oprimo.dev/og.png">
 <meta name="twitter:image:alt" content="Apuração 2026 ao vivo — Presidente, 2º turno. Mapa do Brasil.">
 
@@ -181,7 +181,6 @@ footer li small{display:block;color:var(--mut);font-size:11.5px;line-height:1.3}
   <div class="top">
     <h1>Apuração 2026</h1>
     <span class="live"><span class="dot" id="dot"></span><span id="status">conectando…</span></span>
-    <button class="ib" id="bell" title="Alertas de virada e marcos da apuração" aria-label="Ativar alertas">🔔</button>
     <button class="ib" id="share" aria-label="Compartilhar">↗</button>
   </div>
   <div id="score"></div>
@@ -193,7 +192,7 @@ footer li small{display:block;color:var(--mut);font-size:11.5px;line-height:1.3}
 </div></header>
 <main class="wrap" id="app"></main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<p class="src wrap">Dados oficiais: <a href="https://resultados.tse.jus.br" rel="noopener">resultados.tse.jus.br</a> · atualiza sozinho a cada 15s · projeções são estimativas, não resultado oficial</p>
+<p class="src wrap">Dados oficiais: <a href="https://resultados.tse.jus.br" rel="noopener">resultados.tse.jus.br</a> · resultado final do 2º turno, totalizado pelo TSE em 25/10/2026</p>
 <footer><div class="wrap">
   <div class="fg">
     <div><p class="fb">PrimoDev<span> / apps</span></p><p class="ft">Todos os apps e projetos open source que eu construo, num lugar só. Feito no Brasil.</p>
@@ -222,9 +221,10 @@ footer li small{display:block;color:var(--mut);font-size:11.5px;line-height:1.3}
 <script>
 "use strict";
 const BUILD = "__BUILD__";
-const API = "https://votos-api.oprimo.dev";
 const B = "https://resultados.tse.jus.br/oficial/ele2026";
 const E = { pres1: "6257", pres2: "6258", est1: "6259", est2: "6260" };
+// resultado final do 2º turno congelado no site (scripts/snapshot-tse.py); o 1º turno continua vindo do TSE
+const base = e => e === E.pres2 || e === E.est2 ? "/data/tse" : B;
 const GOV2 = ["ac","am","df","es","rn","to"];
 const UF = {ac:"Acre",al:"Alagoas",am:"Amazonas",ap:"Amapá",ba:"Bahia",ce:"Ceará",df:"Distrito Federal",es:"Espírito Santo",go:"Goiás",ma:"Maranhão",mg:"Minas Gerais",ms:"Mato Grosso do Sul",mt:"Mato Grosso",pa:"Pará",pb:"Paraíba",pe:"Pernambuco",pi:"Piauí",pr:"Paraná",rj:"Rio de Janeiro",rn:"Rio Grande do Norte",ro:"Rondônia",rr:"Roraima",rs:"Rio Grande do Sul",sc:"Santa Catarina",se:"Sergipe",sp:"São Paulo",to:"Tocantins",zz:"Exterior"};
 const UFS = Object.keys(UF);
@@ -238,15 +238,14 @@ const POLLS = [
   {i:"Gerp", d:"out/26", v:{"13":48,"22":52}, u:"https://cnnbrasil.com.br/eleicoes/ultimas-pesquisas-segundo-turno-eleicao"},
 ];
 const CARGOS = {"1":"Presidente","3":"Governador","5":"Senador","6":"Deputado Federal","7":"Deputado Estadual","8":"Deputado Distrital"};
-const POLL_MS = 15000;
 const S = window.STATIC || { paths: {}, t1: {}, vb: "0 0 1 1" };
 
 /* ---------- utils ---------- */
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(4, "0");
-const url = (e, uf, c) => `${B}/${e}/dados/${uf}/${uf}-c${pad(c)}-e${e.padStart(6,"0")}-u.json`;
-const abUrl = e => `${B}/${e}/dados/br/br-e${e.padStart(6,"0")}-ab.json`;
-const foto = (e, uf, sq) => `${B}/${e}/fotos/${uf}/${sq}.jpeg`;
+const url = (e, uf, c) => `${base(e)}/${e}/dados/${uf}/${uf}-c${pad(c)}-e${e.padStart(6,"0")}-u.json`;
+const abUrl = e => `${base(e)}/${e}/dados/br/br-e${e.padStart(6,"0")}-ab.json`;
+const foto = (e, uf, sq) => `${base(e)}/${e}/fotos/${uf}/${sq}.jpeg`;
 const num = s => parseFloat(String(s ?? "").replace(",", ".")) || 0;
 const fmt = n => Math.round(n).toLocaleString("pt-BR");
 const pct = (n, d = 2) => (isFinite(n) ? n : 0).toFixed(d).replace(".", ",") + "%";
@@ -256,16 +255,12 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&l
 const norm = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const ufName = u => u === "br" ? "Brasil" : UF[u] || u.toUpperCase();
-const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 
-// cache:"no-cache" → o browser revalida com ETag; sem mudança o TSE responde 304 (quase zero banda)
-async function get(u, cache = "no-cache") {
-  const r = await fetch(u, { cache });
-  if (!r.ok) throw new Error(r.status === 404 ? "ainda sem dados" : "HTTP " + r.status);
+async function get(u) {
+  const r = await fetch(u);
+  if (!r.ok) throw new Error(r.status === 404 ? "sem dados" : "HTTP " + r.status);
   return r.json();
 }
-// o CDN do TSE às vezes entrega um arquivo mais velho; nunca deixa os números andarem pra trás
-const fresher = (nw, old) => !old || num(nw.s?.pstn) > num(old.s?.pstn) || (num(nw.s?.pstn) === num(old.s?.pstn) && +nw.idg >= +old.idg);
 function cands(d) {
   const out = [];
   for (const cg of d.carg || []) for (const a of cg.agr || []) for (const p of a.par || []) for (const c of p.cand || [])
@@ -275,23 +270,17 @@ function cands(d) {
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("on"), 5000); }
 
 /* ---------- estado da corrida presidencial ---------- */
-const st = { br: null, ab: null, uf: {}, abKey: {}, pair: null, hist: store.get("v26h", []), apiHist: [], sel: null, mapMode: "lead", sort: ["te", -1] };
+const st = { br: null, ab: null, uf: {}, pair: null, hist: [], sel: null, mapMode: "lead", sort: ["te", -1] };
 
 async function loadPres() {
-  const [br, ab] = await Promise.all([get(url(E.pres2, "br", 1)), get(abUrl(E.pres2)).catch(() => null)]);
-  if (fresher(br, st.br)) st.br = br;
+  if (st.br) return;
+  const [br, ab] = await Promise.all([get(url(E.pres2, "br", 1)), get(abUrl(E.pres2))]);
   // ordem fixa pelo número de urna (o "seq" do TSE muda conforme a liderança)
-  if (!st.pair) st.pair = cands(st.br).slice(0, 2).sort((a, b) => (+a.n) - (+b.n)).map(c => ({ n: c.n, nmu: c.nmu, sq: c.sqcand }));
-  if (ab) {
-    st.ab = ab;
-    // só baixa a UF quando o resumo indica que ela mudou
-    const todo = ab.abr.filter(a => a.cdabr !== "br" && st.abKey[a.cdabr] !== a.ht + a.s.st);
-    await Promise.all(todo.map(async a => {
-      try { const d = await get(url(E.pres2, a.cdabr, 1)); if (fresher(d, st.uf[a.cdabr])) st.uf[a.cdabr] = d; st.abKey[a.cdabr] = a.ht + a.s.st; } catch {}
-    }));
-  }
-  sample();
-  alerts();
+  st.pair = cands(br).slice(0, 2).sort((a, b) => (+a.n) - (+b.n)).map(c => ({ n: c.n, nmu: c.nmu, sq: c.sqcand }));
+  await Promise.all(ab.abr.filter(a => a.cdabr !== "br").map(async a => {
+    try { st.uf[a.cdabr] = await get(url(E.pres2, a.cdabr, 1)); } catch {}
+  }));
+  st.ab = ab; st.br = br;
 }
 const pair = () => st.pair || [{ n: "13", nmu: "LULA" }, { n: "22", nmu: "FLAVIO BOLSONARO" }];
 function twoOf(d) {
@@ -337,99 +326,30 @@ function analyze() {
 }
 
 /* ---------- histórico (curva) ---------- */
-function sample() {
-  const d = st.br; if (!d) return;
-  const { a, b } = twoOf(d); if (!(a + b)) return;
-  const h = st.hist, last = h[h.length - 1], pst = num(d.s.pstn);
-  if (last && (last.i === d.idg || pst < last.pst)) return;
-  h.push({ i: d.idg, t: Date.now(), pst, A: a / (a + b) * 100 });
-  if (h.length > 800) h.splice(0, h.length - 800);
-  store.set("v26h", h);
-}
-async function loadApiHist() {
+// gravado pelo antigo serviço de histórico durante a apuração (237 leituras do TSE)
+async function loadHist() {
   try {
-    const j = await get(API + "/history", "default"), n = pair()[0].n;
-    st.apiHist = (j.series || []).map(s => ({ t: s.t, pst: s.pst, A: s.v?.[n] })).filter(s => s.A != null);
+    const j = await get("/data/history.json"), n = pair()[0].n;
+    st.hist = (j.series || []).map(s => ({ t: s.t, pst: s.pst, A: s.v?.[n] })).filter(s => s.A != null);
   } catch {}
 }
 function series() {
   const m = new Map();
-  for (const s of [...st.apiHist, ...st.hist]) if (s.pst > 0) m.set(s.pst.toFixed(2), s);
+  for (const s of st.hist) if (s.pst > 0) m.set(s.pst.toFixed(2), s);
   return [...m.values()].sort((x, y) => x.pst - y.pst || x.t - y.t);
 }
 
-/* ---------- alertas (virada / marcos) ---------- */
-const AL = { on: store.get("v26al", false), lead: store.get("v26lead", null), mile: store.get("v26mile", 0) };
-let audio;
-function beep() {
-  try {
-    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-    if (audio.state === "suspended") audio.resume();
-    const t = audio.currentTime;
-    [660, 880, 1320].forEach((f, k) => {
-      const o = audio.createOscillator(), g = audio.createGain(), t0 = t + k * .14;
-      o.frequency.value = f;
-      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.18, t0 + .02); g.gain.exponentialRampToValueAtTime(.001, t0 + .3);
-      o.connect(g).connect(audio.destination); o.start(t0); o.stop(t0 + .32);
-    });
-  } catch {}
-}
-function notify(title, body) {
-  toast(title + " · " + body);
-  if (!AL.on) return;
-  beep();
-  if ("Notification" in window && Notification.permission === "granted" && document.hidden)
-    try { new Notification(title, { body, icon: "/icons/icon-192.png", tag: "apuracao-local" }); } catch {}
-}
-function alerts() {
-  const d = st.br; if (!d) return;
-  const [A, B] = pair(), { a, b } = twoOf(d); if (!(a + b)) return;
-  const lead = a >= b ? A.n : B.n, pst = num(d.s.pstn);
-  const pa = a / (a + b) * 100, line = `${A.nmu} ${pct(pa)} × ${pct(100 - pa)} ${B.nmu} · ${pct(pst, 1)} apurado`;
-  if (AL.lead && AL.lead !== lead) notify(`Virada! ${(lead === A.n ? A : B).nmu} assume a liderança`, line);
-  AL.lead = lead; store.set("v26lead", lead);
-  const mile = Math.floor(pst / 10) * 10;
-  if (mile > AL.mile && AL.mile) notify(`${mile}% das seções apuradas`, line);
-  if (mile > AL.mile) { AL.mile = mile; store.set("v26mile", mile); }
-}
-async function pushSubscribe() {
-  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false;
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    const { key } = await get(API + "/vapid", "default");
-    const b64 = key.replace(/-/g, "+").replace(/_/g, "/"), raw = Uint8Array.from(atob(b64 + "=".repeat((4 - b64.length % 4) % 4)), c => c.charCodeAt(0));
-    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: raw });
-    const r = await fetch(API + "/subscribe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(sub) });
-    return r.ok;
-  } catch { return false; }
-}
-async function pushUnsubscribe() {
-  try {
-    const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
-    if (sub) { fetch(API + "/unsubscribe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ endpoint: sub.endpoint }) }); await sub.unsubscribe(); }
-  } catch {}
-}
-function bellUI() { $("bell").classList.toggle("on", AL.on); $("bell").textContent = AL.on ? "🔔 on" : "🔔"; }
 // Vercel Web Analytics: eventos customizados (aba, alertas, compartilhar, cliques no rodapé)
 function track(name, data) { try { window.va("event", { name, data }); } catch {} }
 document.addEventListener("click", e => {
   const a = e.target.closest("footer a[href]");
   if (a) track("rodape", { link: a.textContent.trim().slice(0, 40), url: a.href });
 });
-$("bell").onclick = async () => {
-  track("alertas", { on: !AL.on });
-  if (AL.on) { AL.on = false; store.set("v26al", false); pushUnsubscribe(); bellUI(); toast("Alertas desligados"); return; }
-  AL.on = true; store.set("v26al", true); bellUI(); beep();
-  let perm = "Notification" in window ? Notification.permission : "denied";
-  if (perm === "default") perm = await Notification.requestPermission();
-  const pushed = perm === "granted" && await pushSubscribe();
-  toast(pushed ? "Pronto! Alerta de virada e a cada 10% apurado, mesmo com a aba fechada" : "Alertas com som ligados enquanto a página estiver aberta");
-};
 $("share").onclick = async () => {
   track("compartilhar", { nativo: !!navigator.share });
-  const d = st.br, [A, B] = pair(); let text = "Apuração 2026 ao vivo";
-  if (d) { const { a, b } = twoOf(d); if (a + b) text = `${A.nmu} ${pct(a / (a + b) * 100)} × ${pct(b / (a + b) * 100)} ${B.nmu} com ${pct(num(d.s.pstn), 1)} das seções apuradas`; }
-  const data = { title: "Apuração 2026 ao vivo", text, url: location.origin + "/" };
+  const d = st.br, [A, B] = pair(); let text = "Resultado da eleição 2026";
+  if (d) { const { a, b } = twoOf(d); if (a + b) text = `Resultado final: ${A.nmu} ${pct(a / (a + b) * 100)} × ${pct(b / (a + b) * 100)} ${B.nmu}`; }
+  const data = { title: "Apuração 2026 · resultado final", text, url: location.origin + "/" };
   try { if (navigator.share) return await navigator.share(data); await navigator.clipboard.writeText(text + " " + data.url); toast("Link copiado"); } catch {}
 };
 
@@ -529,9 +449,8 @@ views.geral = {
     // re-renderiza a curva na largura real do card (texto sempre em tamanho legível)
     this.ro?.disconnect(); this.cw = 0;
     if (window.ResizeObserver) { this.ro = new ResizeObserver(() => { const w = Math.round($("g-chart")?.clientWidth || 0); if (w && w !== this.cw) this.chart(); }); this.ro.observe($("g-chart")); }
-    loadApiHist().then(() => this.chart());
   },
-  async update() { await loadPres(); this.paint(); },
+  async update() { await loadPres(); if (!st.hist.length) await loadHist(); this.paint(); },
   paint() {
     const an = analyze(); this.an = an;
     this.summary(an); this.map(an); this.ufCard(an); this.chart(); this.polls(an); this.regions(an); this.table(an);
@@ -643,13 +562,13 @@ views.geral = {
     if (yBot - yTop < gap) { yTop = mid - gap / 2; yBot = mid + gap / 2; }
     yTop = clamp(yTop, 14, H - Bt - gap); yBot = clamp(yBot, yTop + gap, H - 4);
     const lab = (c, v, y, key) => `<text x="${f(ex + 10)}" y="${f(y + 1)}" fill="var(--${key})"><tspan class="el">${pct(v, 1)}</tspan><tspan class="en" x="${f(ex + 10)}" dy="14">${esc(short(c.nmu))}</tspan></text>`;
-    const since = !ghost && first.pst > 1 && !st.apiHist.length ? ` · acompanhando desde ${pct(first.pst, 1)} apurado` : "";
+    const since = !ghost && first.pst > 1 ? ` · registrada a partir de ${pct(first.pst, 1)} apurado` : "", fin = last.pst >= 100;
     host.innerHTML = head("% dos votos válidos × % das seções apuradas" + since) + `<svg class="chart" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução do percentual de cada candidato: ${esc(A.nmu)} ${pct(last.A, 1)}, ${esc(B.nmu)} ${pct(100 - last.A, 1)}">
       ${yt.map(v => v === 50 ? "" : `<line class="gl" x1="${L}" x2="${f(W - R + 4)}" y1="${f(Y(v))}" y2="${f(Y(v))}"/>`).join("")}
       ${yt.map(v => `<text class="ax" x="${L - 6}" y="${f(Y(v) + 4)}" text-anchor="end"${v === 50 ? ' style="fill:var(--fg);font-weight:700"' : ""}>${String(v).replace(".", ",")}%</text>`).join("")}
       <rect x="${f(ex)}" y="${T}" width="${f(Math.max(0, X(100) - ex))}" height="${H - T - Bt}" fill="var(--bar)" opacity=".55"/>
       <line x1="${f(ex)}" x2="${f(ex)}" y1="${T - 6}" y2="${H - Bt}" stroke="var(--mut)" stroke-dasharray="3 3"/>
-      <text class="ax" x="${f(ex)}" y="${T - 9}" text-anchor="${ex > W - R - 40 ? "end" : "middle"}" style="fill:var(--fg);font-weight:700">agora · ${pct(last.pst, 1)}</text>
+      <text class="ax" x="${f(ex)}" y="${T - 9}" text-anchor="${ex > W - R - 40 ? "end" : "middle"}" style="fill:var(--fg);font-weight:700">${fin ? "final" : `agora · ${pct(last.pst, 1)}`}</text>
       ${X(100) - ex > 90 ? `<text class="ax" x="${f((ex + X(100)) / 2)}" y="${H - Bt - 8}" text-anchor="middle">falta apurar</text>` : ""}
       ${xt.map(p => `<text class="ax" x="${f(X(p))}" y="${H - 6}" text-anchor="middle">${String(p).replace(".", ",")}%</text>`).join("")}
       ${ghost ? "" : `<path d="${area.A}" fill="var(--A)" fill-opacity=".13"/><path d="${area.B}" fill="var(--B)" fill-opacity=".13"/>`}
@@ -660,7 +579,7 @@ views.geral = {
       ${lab(aTop ? A : B, aTop ? last.A : 100 - last.A, yTop, aTop ? "A" : "B")}${lab(aTop ? B : A, aTop ? 100 - last.A : last.A, yBot, aTop ? "B" : "A")}
     </svg>
     <div class="legend"><span><i style="background:var(--A)"></i>${esc(A.nmu)}</span><span><i style="background:var(--B)"></i>${esc(B.nmu)}</span>${cross.length ? `<span><b>${cross.length} virada${cross.length > 1 ? "s" : ""}</b> na apuração</span>` : ""}<span>tracejado = 50%</span></div>
-    ${ghost ? `<p class="note">Primeira leitura em ${pct(last.pst, 1)} apurado (tracejado parte de 50%). A curva cresce a cada atualização do TSE, mais ou menos a cada minuto.</p>` : ""}`;
+    ${ghost ? `<p class="note">Sem o histórico da apuração: o tracejado liga 50% ao resultado final.</p>` : ""}`;
   },
   polls(an) {
     const [A, B] = pair(), { a, b } = twoOf(st.br), cur = a + b ? a / (a + b) * 100 : 50;
@@ -734,8 +653,8 @@ views.explorar = {
     $("x-q").addEventListener("input", e => { this.q = e.target.value; this.lim = 40; this.draw(); });
   },
   opts() {
-    const u = this.uf, o = [{ v: "6258-1", l: "Presidente", s: "2º turno · ao vivo" }];
-    if (GOV2.includes(u)) o.push({ v: "6260-3", l: "Governador", s: "2º turno · ao vivo" });
+    const u = this.uf, o = [{ v: "6258-1", l: "Presidente", s: "2º turno" }];
+    if (GOV2.includes(u)) o.push({ v: "6260-3", l: "Governador", s: "2º turno" });
     o.push({ v: "6257-1", l: "Presidente", s: "1º turno" });
     if (u !== "br" && u !== "zz") {
       o.push({ v: "6259-3", l: "Governador", s: "1º turno" }, { v: "6259-5", l: "Senador", s: "1º turno" }, { v: "6259-6", l: "Deputado Federal", s: "1º turno" });
@@ -746,9 +665,9 @@ views.explorar = {
   live() { return this.key.startsWith("6258") || this.key.startsWith("6260"); },
   async update() {
     loadPres().then(scoreboard).catch(() => {});
-    if (!this.live() && this.d) return;
+    if (this.d) return;
     const [e, c] = this.key.split("-");
-    this.d = await get(url(e, this.uf, c), this.live() ? "no-cache" : "default");
+    this.d = await get(url(e, this.uf, c));
     this.draw();
   },
   draw() {
@@ -764,9 +683,9 @@ views.explorar = {
   },
 };
 
-/* ---------- roteamento + loop ---------- */
+/* ---------- roteamento ---------- */
 const app = $("app");
-let timer, cur = "", busy = false, again = false, lastHist = 0;
+let cur = "", busy = false, again = false;
 function route() { const [v, ...a] = (location.hash.slice(1) || "geral").split("/"); return views[v] ? [v, a] : ["geral", []]; }
 async function tick() {
   if (busy) { again = true; return; } busy = true;
@@ -776,36 +695,19 @@ async function tick() {
   try {
     await views[v].update();
     scoreboard();
-    $("dot").className = "dot"; $("status").textContent = st.br ? `TSE ${st.br.hg}` : "ao vivo";
+    $("dot").className = "dot off"; $("status").textContent = st.br ? `Resultado final · TSE ${st.br.dg}` : "Resultado final";
   } catch (err) {
-    $("dot").className = "dot err"; $("status").textContent = "reconectando…";
-    if (!st.br) app.innerHTML = `<section class="card"><p class="err">Não foi possível carregar (${esc(err.message)}). Tentando de novo…</p></section>`, cur = "";
+    $("dot").className = "dot err"; $("status").textContent = "erro ao carregar";
+    if (!st.br) app.innerHTML = `<section class="card"><p class="err">Não foi possível carregar (${esc(err.message)}). Recarregue a página.</p></section>`, cur = "";
+    else ($("x-res") || $("gv") || app).insertAdjacentHTML("beforeend", `<section class="card"><p class="err">Não foi possível carregar (${esc(err.message)}).</p></section>`);
   } finally { busy = false; if (again) { again = false; tick(); } }
 }
-function schedule() {
-  clearTimeout(timer);
-  if (document.hidden && !AL.on) { $("dot").className = "dot off"; return; }
-  timer = setTimeout(async () => {
-    await tick(); checkVersion();
-    if (route()[0] === "geral" && Date.now() - lastHist > 120000) { lastHist = Date.now(); loadApiHist(); }
-    schedule();
-  }, document.hidden ? POLL_MS * 2 : POLL_MS);
-}
-addEventListener("hashchange", async () => { await tick(); schedule(); scrollTo(0, 0); });
-document.addEventListener("visibilitychange", async () => { if (!document.hidden) await tick(); schedule(); });
-
-// deploy novo → todo mundo recarrega na próxima janela de 30s
-async function checkVersion() {
-  if (BUILD.startsWith("__")) return;
-  try { const { v } = await get("/version.json?t=" + Date.now(), "no-store"); if (v && v !== BUILD) location.reload(); } catch {}
-}
+addEventListener("hashchange", async () => { await tick(); scrollTo(0, 0); });
 if ("serviceWorker" in navigator && !BUILD.startsWith("__")) navigator.serviceWorker.register("/sw.js").catch(() => {});
 
-bellUI();
 { const hd = document.querySelector("header"), setHH = () => document.documentElement.style.setProperty("--hh", hd.offsetHeight + 12 + "px");
   setHH(); if (window.ResizeObserver) new ResizeObserver(setHH).observe(hd); else addEventListener("resize", setHH); }
-lastHist = Date.now();
-tick().then(schedule);
+tick();
 </script>
 </body>
 </html>

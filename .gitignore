@@ -3,6 +3,5 @@
 .out
 .claude
 node_modules
-api/data
 .env
 *.local

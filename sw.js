@@ -70,7 +70,7 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  // Never touch cross-origin (TSE, votos-api, etc.) — straight to network.
+  // Never touch cross-origin (TSE 1st-round files) — straight to network.
   if (url.origin !== self.location.origin) return;
   // Always network, never cached.
   if (url.pathname === "/version.json" || url.pathname === "/sw.js") return;
@@ -79,40 +79,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   event.respondWith(staleWhileRevalidate(event));
-});
-
-self.addEventListener("push", (event) => {
-  let d = {};
-  try { d = event.data ? event.data.json() : {}; }
-  catch (e) { d = { body: event.data ? event.data.text() : "" }; }
-  const title = d.title || "Apuração 2026";
-  event.waitUntil(
-    self.registration.showNotification(title, {
-      body: d.body || "",
-      tag: d.tag || "apuracao",
-      renotify: true,
-      icon: "/icons/icon-192.png",
-      badge: "/icons/icon-192.png",
-      data: { url: d.url || "/" },
-      vibrate: [100, 50, 100]
-    })
-  );
-});
-
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-  const target = new URL((event.notification.data && event.notification.data.url) || "/", self.location.origin).href;
-  event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-      for (const c of list) {
-        if (new URL(c.url).origin === self.location.origin) {
-          const p = c.url !== target && "navigate" in c ? c.navigate(target).catch(() => c) : Promise.resolve(c);
-          return p.then((cl) => (cl || c).focus());
-        }
-      }
-      return self.clients.openWindow(target);
-    })
-  );
 });
 
 self.addEventListener("message", (event) => {
